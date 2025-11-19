@@ -1,25 +1,24 @@
-Hippocratic Bedtime Story Agent
+💤 Hippocratic Bedtime Story Agent
 
-A safe, multi-agent storytelling pipeline designed for the Hippocratic AI Take-Home Assignment
+A safe, multi-agent storytelling system designed for the Hippocratic AI Take-Home Assignment.
 
-This project implements a multi-step, safety-aligned storytelling system that generates child-appropriate bedtime stories using a structured agent workflow.
-Each story is produced, evaluated, revised, and optionally refined based on user feedback—ensuring every output is safe, gentle, and suitable for children.
+This project implements a multi-step, safety-aligned pipeline that generates child-appropriate bedtime stories using LLM agents. Every story is generated, judged, revised, and optionally refined using user feedback—ensuring all outputs remain safe, gentle, and developmentally appropriate.
 
-Overview
+✨ Overview
 
-The system uses three coordinated agents:
+The system is built around three coordinated agents, orchestrated through a structured pipeline.
 
 1. Story Generator Agent
 
 Produces the initial bedtime story
 
-Tailors tone and style based on request category
+Adapts tone/style based on request category
 
-Ensures the story is gentle and suitable for young readers
+Ensures a soft, gentle, child-friendly narrative
 
 2. Judge Agent
 
-Evaluates the story on multiple criteria:
+Evaluates the story across multiple criteria:
 
 Age appropriateness
 
@@ -31,162 +30,105 @@ Creativity
 
 Language simplicity
 
-Returns a structured JSON score and suggested improvements.
+Returns:
+
+A structured JSON evaluation
+
+Suggested improvements for revision
 
 3. Reviser Agent
 
 Improves the story using judge feedback
 
-Ensures safety guidelines are met
+Keeps safety and emotional tone within guidelines
 
-Iterates up to two times to reach a minimum quality threshold
+Can incorporate optional user feedback (e.g., “make it funnier”, “shorter”)
 
-Optional: User Feedback Loop
-
-After automated revisions, users may request additional refinements (e.g., “make it funnier,” “shorter,” “more magical”).
-The reviser incorporates the feedback while maintaining safety constraints.
-
-Project Structure
-.
-├── main.py               # Main entry point: coordinates the agent loop
-├── storyteller.py        # Story generator + revision logic
-├── judge.py              # Evaluation and scoring logic
-├── prompts.py            # Centralized prompt templates
-├── utils.py              # OpenAI client wrapper, env loader, helpers
-├── README.md
-└── requirements.txt
-
-How It Works (Pipeline Flow)
-
-User Request
-User describes the bedtime story they want.
-
-Categorization
-Request is categorized to apply the correct storytelling style.
-
-Initial Story Generation
-The Storyteller agent creates a first draft.
-
-Judging & Scoring
-The Judge agent returns:
-
-multiple sub-scores
-
-an overall score
-
-improvement suggestions
-
-Automated Revision Loop
-If the story does not meet the threshold:
-
-it is revised
-
-evaluated again
-
-loop repeats (max 2 iterations)
-
-Optional User Feedback
-User may ask for adjustments (tone, length, humor, etc.).
-Story is rewritten while preserving safety.
-
-Final Story Output
-
-Running the Project
+▶️ How to Run the Project
 1. Clone the repository
 git clone https://github.com/uttishnarayan1199/Hippocratic_Takehome_Assignment.git
 cd Hippocratic_Takehome_Assignment
 
-2. Create and activate a virtual environment
+2. Create a virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
 
 3. Install dependencies
 pip install -r requirements.txt
 
-4. Create a .env file
+4. Add your API key
 
-In the project root, create a file named .env:
+Create .env in the project root:
 
 OPENAI_API_KEY=sk-proj-xxxxxx
-
-
-(Your key must be added manually. None are included in this repository.)
 
 5. Run the agent
 python main.py
 
 
-You will be prompted:
+You will see:
 
 === Hippocratic Bedtime Story Generator ===
 Describe the kind of bedtime story you want:
 
 
-Enter any request—for example:
+Enter any prompt such as:
 
-A bedtime story about a little rabbit who wants to reach the stars
+A story about a sleepy panda who learns to be brave
 
+The system will:
 
-The full cycle (Draft → Judge → Revise → Feedback) will run automatically.
+Generate → Judge → Revise
 
-Safety & Design Considerations
+Ask if you want extra modifications
 
-This agent is built with strict safety controls to meet Hippocratic AI guidelines:
+Output a safe final story
 
-No violence, weapons, or fear-inducing elements
+🔒 Safety Design
 
-No emotionally heavy or adult themes
+This project follows child-safety guidelines:
 
-Language tuned for children aged 5–10
+No violence
 
-Clear, gentle, emotionally stable tone
+No frightening scenarios
 
-Automatic rewriting to enforce safety rules
+No intense emotional themes
 
-The Judge agent heavily penalizes:
+No mature or abstract concepts
 
-frightening or intense imagery
+Simple language suitable for ages 5–10
 
-inappropriate emotional content
+The Judge Agent enforces these rules with scoring penalties and required revisions.
 
-complex vocabulary
+🛠️ Technical Design Notes
 
-abstract or psychologically heavy ideas
+Modular architecture: agents separated into clear modules
 
-Stories are continually revised until safe.
+Centralized prompt management for easier tuning
 
-Technical Design Highlights
+Strict OpenAI wrapper ensuring consistent API calls
 
-Modular Architecture
-Each agent (storyteller, judge, reviser) resides in its own module for clarity.
+Configurable scoring threshold in is_good_enough()
 
-Centralized Prompt Management
-All prompt templates live in prompts.py for easy iteration and fine-tuning.
+User feedback loop maintains safety before applying modifications
 
-Unified OpenAI Wrapper
-call_chat_model() in utils.py abstracts away model calls.
+📦 Requirements
 
-Clear, Single Entry Point
-main.py orchestrates the full agent pipeline.
-
-Configurable Threshold Logic
-The evaluation strictness can be adjusted in is_good_enough().
-
-Dependencies
-
-Listed in requirements.txt:
+requirements.txt includes:
 
 openai>=1.0.0
+
 python-dotenv
 
-Notes for Reviewers
+📝 Notes for Reviewers
 
-No API keys are included in this repository.
+No API keys are committed (intentionally).
 
-.env must be created by the user.
+.env must be created locally.
 
-Code is clean, modular, and easy to audit.
-
-The system runs end-to-end with a single command:
+Project is fully runnable with one command:
 
 python main.py
+
+
+Code is easy to extend, refactor, and maintain.
