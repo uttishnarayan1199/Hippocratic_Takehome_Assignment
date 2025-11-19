@@ -1,83 +1,187 @@
-#Hippocratic Bedtime Story Agent
+🚀 Hippocratic Bedtime Story Agent
 
-This project is my solution to the Hippocratic AI coding assignment.
+A multi-agent storytelling system designed for the Hippocratic AI Take-Home Assignment
 
-It implements a small multi-agent system that:
-- Generates bedtime stories for children aged 5–10.
-- Uses a separate **LLM judge** to score safety, simplicity, and tone.
-- Iteratively **revises** the story if it does not meet a quality threshold.
-- Lets the user **request additional changes** (e.g., “make it shorter”, “more funny”).
-- Categorizes the user’s request (soothing / adventure / funny / learning / sensitive / general)
-  and adapts the story style accordingly.
+This project implements a safe, child-appropriate bedtime story generator using a multi-step agent workflow:
 
-The OpenAI model is **gpt-3.5-turbo**, as required.
+Story Generator Agent – writes a creative story based on user input
 
----
+Judge Agent – evaluates the story’s safety, tone, age-appropriateness, and clarity
 
-## Project Structure
+Reviser Agent – improves the story using judge feedback
 
-- `main.py`  
-  Command-line entrypoint. Orchestrates the flow:
-  1. Get story request from user  
-  2. Generate story  
-  3. Judge the story  
-  4. Optionally revise in a loop  
-  5. Optionally apply user feedback
+Optional User Feedback Loop – user can request changes (e.g., “make it funnier”)
 
-- `utils.py`  
-  - Wraps the OpenAI client and chat completion call.  
-  - Loads `OPENAI_API_KEY` from `.env`.  
-  - Provides a simple `call_chat_model()` helper.
+The system ensures every generated story is:
 
-- `prompts.py`  
-  - Contains system prompts for:
-    - Story generator (storyteller)
-    - Judge
-    - Revision agent
+safe for children
 
-- `storyteller.py`  
-  - `categorize_request()` → classifies the request into categories like “soothing”, “adventure”, etc.  
-  - `generate_initial_story()` → generates the first draft using category-specific guidance.  
-  - `revise_story()` → rewrites the story based on judge feedback and optional user feedback.
+emotionally appropriate
 
-- `judge.py`  
-  - `judge_story()` → calls the judge LLM with a strict JSON schema.  
-  - `is_good_enough()` → decides if the story passes the threshold.
+clear and coherent
 
----
+aligned with Hippocratic AI’s guidelines
 
-## Architecture
+📁 Project Structure
+.
+├── main.py                # Entry point: handles the full Story → Judge → Revise loop
+├── storyteller.py         # Story generator and revision agent
+├── judge.py               # Story evaluator (safety, clarity, tone)
+├── prompts.py             # Centralized prompt templates for agents
+├── utils.py               # OpenAI client, environment loader, helper functions
+├── README.md
+└── requirements.txt
 
-High-level flow:
+🧠 How It Works (Agent Workflow)
+1. User Request
 
-```text
-User
-  |
-  v
-main.py  ──────────────────────────────────────────────────────────────┐
-  |                                                                    |
-  | 1. Read user request                                               |
-  v                                                                    |
-categorize_request()  (storyteller.py)                                 |
-  |                                                                    |
-  v                                                                    |
-generate_initial_story()  ──>  initial story                           |
-  |                                                                    |
-  v                                                                    |
-judge_story()  (judge.py) ──> scores + feedback                        |
-  |                                                                    |
-  | if not good enough (score too low)                                 |
-  v                                                                    |
-revise_story()  (storyteller.py) <─────── judge feedback               |
-  |                           (loop max N times)                       |
-  └────────────────────────────────────────────────────────────────────┘
+The user describes the kind of bedtime story they want.
 
-After the automated loop:
+2. Story Generator Agent
 
-User feedback (optional, e.g. "more funny", "shorter")
-  |
-  v
-revise_story(..., user_feedback=...)  ──> updated story
-  |
-  v
-judge_story()  ──> final scores
+Produces an initial draft
+
+Uses prompt templates tailored by story category
+
+Ensures age-appropriate tone for children
+
+3. Judge Agent
+
+Evaluates the story on:
+
+Age appropriateness
+
+Emotional tone
+
+Clarity & coherence
+
+Creativity
+
+Language simplicity
+
+Returns a structured JSON score + list of improvements.
+
+4. Revision Loop
+
+If the story score is below a threshold:
+
+The system revises the story using judge feedback
+
+Runs another evaluation
+
+Repeats for up to 2 iterations
+
+5. Optional User Feedback
+
+After the automated loop, the user can request further changes, e.g.:
+
+make it shorter
+make it funnier
+focus more on the dragon
+
+
+The story is revised again while maintaining safety.
+
+▶️ How to Run the Project
+1. Clone the repo
+git clone https://github.com/uttishnarayan1199/Hippocratic_Takehome_Assignment.git
+cd Hippocratic_Takehome_Assignment
+
+2. Create a virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+3. Install dependencies
+pip install -r requirements.txt
+
+4. Create a .env file
+
+Create a file named .env in the project root:
+
+OPENAI_API_KEY=sk-proj-xxxxx
+
+
+(Use your own key — it is not included in this repo.)
+
+5. Run the agent
+python main.py
+
+
+You will see:
+
+=== Hippocratic Bedtime Story Generator ===
+Describe the kind of bedtime story you want:
+
+
+Enter your story request, such as:
+
+A story about a little rabbit who wants to reach the stars
+
+
+The agent will:
+
+Generate a draft
+
+Judge it
+
+Revise it until safe
+
+Ask if you want further changes
+
+🔒 Safety Considerations
+
+This agent includes strict guardrails to ensure stories remain:
+
+non-violent
+
+non-frightening
+
+emotionally gentle
+
+developmentally appropriate for ages 5–10
+
+The judge prompt penalizes:
+
+complex, abstract, or adult themes
+
+fear-inducing imagery
+
+emotionally heavy topics
+
+excessive vocabulary complexity
+
+Stories are rewritten automatically until safe.
+
+🛠️ Technical Design Choices
+
+Modular design
+Each agent (storyteller, judge, reviser) is in its own file for clarity.
+
+Centralized prompts
+All prompt templates live in prompts.py for easy tuning.
+
+Reusable OpenAI wrapper
+utils.py provides a single call_chat_model() function abstracting model calls.
+
+Clear entrypoint
+main.py contains the full pipeline and makes the project easy to run.
+
+User-adjustable revision threshold
+You can tune the scorer’s strictness by editing is_good_enough().
+
+📦 Dependencies
+
+requirements.txt includes:
+
+openai>=1.0.0
+python-dotenv
+
+📌 Notes for Reviewers
+
+No API keys are committed (by design).
+
+.env must be created manually.
+
+Code is readable, modular, and easy to extend.
+
+The project can be run entirely from main.py with one command.
