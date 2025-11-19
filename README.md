@@ -1,53 +1,25 @@
-🚀 Hippocratic Bedtime Story Agent
+Hippocratic Bedtime Story Agent
 
-A multi-agent storytelling system designed for the Hippocratic AI Take-Home Assignment
+A safe, multi-agent storytelling pipeline designed for the Hippocratic AI Take-Home Assignment
 
-This project implements a safe, child-appropriate bedtime story generator using a multi-step agent workflow:
+This project implements a multi-step, safety-aligned storytelling system that generates child-appropriate bedtime stories using a structured agent workflow.
+Each story is produced, evaluated, revised, and optionally refined based on user feedback—ensuring every output is safe, gentle, and suitable for children.
 
-Story Generator Agent – writes a creative story based on user input
+Overview
 
-Judge Agent – evaluates the story’s safety, tone, age-appropriateness, and clarity
+The system uses three coordinated agents:
 
-Reviser Agent – improves the story using judge feedback
+1. Story Generator Agent
 
-Optional User Feedback Loop – user can request changes (e.g., “make it funnier”)
+Produces the initial bedtime story
 
-The system ensures every generated story is:
+Tailors tone and style based on request category
 
-safe for children
+Ensures the story is gentle and suitable for young readers
 
-emotionally appropriate
+2. Judge Agent
 
-clear and coherent
-
-aligned with Hippocratic AI’s guidelines
-
-📁 Project Structure
-.
-├── main.py                # Entry point: handles the full Story → Judge → Revise loop
-├── storyteller.py         # Story generator and revision agent
-├── judge.py               # Story evaluator (safety, clarity, tone)
-├── prompts.py             # Centralized prompt templates for agents
-├── utils.py               # OpenAI client, environment loader, helper functions
-├── README.md
-└── requirements.txt
-
-🧠 How It Works (Agent Workflow)
-1. User Request
-
-The user describes the kind of bedtime story they want.
-
-2. Story Generator Agent
-
-Produces an initial draft
-
-Uses prompt templates tailored by story category
-
-Ensures age-appropriate tone for children
-
-3. Judge Agent
-
-Evaluates the story on:
+Evaluates the story on multiple criteria:
 
 Age appropriateness
 
@@ -59,35 +31,72 @@ Creativity
 
 Language simplicity
 
-Returns a structured JSON score + list of improvements.
+Returns a structured JSON score and suggested improvements.
 
-4. Revision Loop
+3. Reviser Agent
 
-If the story score is below a threshold:
+Improves the story using judge feedback
 
-The system revises the story using judge feedback
+Ensures safety guidelines are met
 
-Runs another evaluation
+Iterates up to two times to reach a minimum quality threshold
 
-Repeats for up to 2 iterations
+Optional: User Feedback Loop
 
-5. Optional User Feedback
+After automated revisions, users may request additional refinements (e.g., “make it funnier,” “shorter,” “more magical”).
+The reviser incorporates the feedback while maintaining safety constraints.
 
-After the automated loop, the user can request further changes, e.g.:
+Project Structure
+.
+├── main.py               # Main entry point: coordinates the agent loop
+├── storyteller.py        # Story generator + revision logic
+├── judge.py              # Evaluation and scoring logic
+├── prompts.py            # Centralized prompt templates
+├── utils.py              # OpenAI client wrapper, env loader, helpers
+├── README.md
+└── requirements.txt
 
-make it shorter
-make it funnier
-focus more on the dragon
+How It Works (Pipeline Flow)
 
+User Request
+User describes the bedtime story they want.
 
-The story is revised again while maintaining safety.
+Categorization
+Request is categorized to apply the correct storytelling style.
 
-▶️ How to Run the Project
-1. Clone the repo
+Initial Story Generation
+The Storyteller agent creates a first draft.
+
+Judging & Scoring
+The Judge agent returns:
+
+multiple sub-scores
+
+an overall score
+
+improvement suggestions
+
+Automated Revision Loop
+If the story does not meet the threshold:
+
+it is revised
+
+evaluated again
+
+loop repeats (max 2 iterations)
+
+Optional User Feedback
+User may ask for adjustments (tone, length, humor, etc.).
+Story is rewritten while preserving safety.
+
+Final Story Output
+
+Running the Project
+1. Clone the repository
 git clone https://github.com/uttishnarayan1199/Hippocratic_Takehome_Assignment.git
 cd Hippocratic_Takehome_Assignment
 
-2. Create a virtual environment
+2. Create and activate a virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
 
@@ -96,92 +105,88 @@ pip install -r requirements.txt
 
 4. Create a .env file
 
-Create a file named .env in the project root:
+In the project root, create a file named .env:
 
-OPENAI_API_KEY=sk-proj-xxxxx
+OPENAI_API_KEY=sk-proj-xxxxxx
 
 
-(Use your own key — it is not included in this repo.)
+(Your key must be added manually. None are included in this repository.)
 
 5. Run the agent
 python main.py
 
 
-You will see:
+You will be prompted:
 
 === Hippocratic Bedtime Story Generator ===
 Describe the kind of bedtime story you want:
 
 
-Enter your story request, such as:
+Enter any request—for example:
 
-A story about a little rabbit who wants to reach the stars
+A bedtime story about a little rabbit who wants to reach the stars
 
 
-The agent will:
+The full cycle (Draft → Judge → Revise → Feedback) will run automatically.
 
-Generate a draft
+Safety & Design Considerations
 
-Judge it
+This agent is built with strict safety controls to meet Hippocratic AI guidelines:
 
-Revise it until safe
+No violence, weapons, or fear-inducing elements
 
-Ask if you want further changes
+No emotionally heavy or adult themes
 
-🔒 Safety Considerations
+Language tuned for children aged 5–10
 
-This agent includes strict guardrails to ensure stories remain:
+Clear, gentle, emotionally stable tone
 
-non-violent
+Automatic rewriting to enforce safety rules
 
-non-frightening
+The Judge agent heavily penalizes:
 
-emotionally gentle
+frightening or intense imagery
 
-developmentally appropriate for ages 5–10
+inappropriate emotional content
 
-The judge prompt penalizes:
+complex vocabulary
 
-complex, abstract, or adult themes
+abstract or psychologically heavy ideas
 
-fear-inducing imagery
+Stories are continually revised until safe.
 
-emotionally heavy topics
+Technical Design Highlights
 
-excessive vocabulary complexity
+Modular Architecture
+Each agent (storyteller, judge, reviser) resides in its own module for clarity.
 
-Stories are rewritten automatically until safe.
+Centralized Prompt Management
+All prompt templates live in prompts.py for easy iteration and fine-tuning.
 
-🛠️ Technical Design Choices
+Unified OpenAI Wrapper
+call_chat_model() in utils.py abstracts away model calls.
 
-Modular design
-Each agent (storyteller, judge, reviser) is in its own file for clarity.
+Clear, Single Entry Point
+main.py orchestrates the full agent pipeline.
 
-Centralized prompts
-All prompt templates live in prompts.py for easy tuning.
+Configurable Threshold Logic
+The evaluation strictness can be adjusted in is_good_enough().
 
-Reusable OpenAI wrapper
-utils.py provides a single call_chat_model() function abstracting model calls.
+Dependencies
 
-Clear entrypoint
-main.py contains the full pipeline and makes the project easy to run.
-
-User-adjustable revision threshold
-You can tune the scorer’s strictness by editing is_good_enough().
-
-📦 Dependencies
-
-requirements.txt includes:
+Listed in requirements.txt:
 
 openai>=1.0.0
 python-dotenv
 
-📌 Notes for Reviewers
+Notes for Reviewers
 
-No API keys are committed (by design).
+No API keys are included in this repository.
 
-.env must be created manually.
+.env must be created by the user.
 
-Code is readable, modular, and easy to extend.
+Code is clean, modular, and easy to audit.
 
-The project can be run entirely from main.py with one command.
+The system runs end-to-end with a single command:
+
+python main.py
